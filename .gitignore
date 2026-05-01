@@ -39,3 +39,7 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# docs (README.md is committed explicitly when needed)
+*.md
+!README.md
