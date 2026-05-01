@@ -1,30 +1,42 @@
 {
   "expo": {
-    "name": "MoApp",
-    "slug": "MoApp",
+    "name": "Mò",
+    "slug": "mo-learn-chinese",
     "version": "1.0.0",
+    "scheme": "mo",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1C1917"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "studio.mo.learnChinese"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#1C1917"
       },
+      "package": "studio.mo.learnChinese",
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      ["expo-router", { "root": "src/app" }],
+      "expo-sqlite",
+      [
+        "expo-speech",
+        {}
+      ]
+    ]
   }
 }
