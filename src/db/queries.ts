@@ -367,3 +367,31 @@ export async function createUser(
   );
   return result.lastInsertRowId;
 }
+
+// ─── Review Helpers ──────────────────────────────────────────
+
+/**
+ * Returns true if the user has at least one card that is not 'new'.
+ * Used to distinguish "nothing studied yet" from "nothing due today".
+ */
+export async function hasStudiedCards(): Promise<boolean> {
+  const db = getDatabase();
+  const row = await db.getFirstAsync<{ count: number }>(
+    `SELECT COUNT(*) as count FROM user_progress
+     WHERE status IN ('seen', 'learning', 'reviewing', 'mastered')`
+  );
+  return (row?.count ?? 0) > 0;
+}
+
+/**
+ * Returns the earliest upcoming review date, or null if no cards are scheduled.
+ */
+export async function getNextReviewDate(): Promise<string | null> {
+  const db = getDatabase();
+  const row = await db.getFirstAsync<{ next_review: string }>(
+    `SELECT next_review FROM user_progress
+     WHERE status IN ('learning', 'reviewing') AND next_review IS NOT NULL
+     ORDER BY next_review ASC LIMIT 1`
+  );
+  return row?.next_review ?? null;
+}
