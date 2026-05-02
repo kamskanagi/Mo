@@ -40,6 +40,7 @@ yarn-error.*
 /ios
 /android
 
-# docs (README.md is committed explicitly when needed)
+# docs (README.md and design specs are committed; other .md files ignored)
 *.md
 !README.md
+!docs/**/*.md
