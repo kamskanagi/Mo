@@ -8,7 +8,8 @@ import {
   incrementTodayStat,
   getProgress,
 } from '../db/queries';
-import { calculateNextReview } from '../services/srs';
+import { calculateNextReview, calculateNextReviewRated } from '../services/srs';
+import type { SrsRating } from '../services/srs';
 import type { WeekProgress, OverallProgress, DailyStats } from '../types/progress';
 
 interface ProgressState {
@@ -22,6 +23,7 @@ interface ProgressActions {
   loadProgress: () => Promise<void>;
   markCharacterStudied: (characterId: number) => Promise<void>;
   recordReview: (characterId: number, wasCorrect: boolean) => Promise<void>;
+  recordReviewRated: (characterId: number, rating: SrsRating) => Promise<void>;
   recordWritingPractice: (characterId: number, mistakes: number) => Promise<void>;
   refreshStats: () => Promise<void>;
 }
@@ -85,6 +87,29 @@ export const useProgressStore = create<ProgressState & ProgressActions>((set, ge
       lastReviewed: new Date().toISOString().slice(0, 10),
       correctCount: (existing?.correctCount ?? 0) + (wasCorrect ? 1 : 0),
       mistakeCount: (existing?.mistakeCount ?? 0) + (wasCorrect ? 0 : 1),
+    });
+    await incrementTodayStat('reviews_completed');
+    await get().refreshStats();
+  },
+
+  recordReviewRated: async (characterId: number, rating: SrsRating) => {
+    const existing = await getProgress(characterId);
+    const next = calculateNextReviewRated(
+      {
+        currentInterval: existing?.srsInterval ?? 0,
+        currentFactor: existing?.srsFactor ?? 2.5,
+        correctCount: existing?.correctCount ?? 0,
+      },
+      rating,
+    );
+    await updateProgress(characterId, {
+      status: next.status,
+      srsInterval: next.srsInterval,
+      srsFactor: next.srsFactor,
+      nextReview: next.nextReview,
+      lastReviewed: new Date().toISOString().slice(0, 10),
+      correctCount: (existing?.correctCount ?? 0) + (rating !== 'again' ? 1 : 0),
+      mistakeCount: (existing?.mistakeCount ?? 0) + (rating === 'again' ? 1 : 0),
     });
     await incrementTodayStat('reviews_completed');
     await get().refreshStats();
