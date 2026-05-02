@@ -3,28 +3,45 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Slot, useRouter, useSegments } from 'expo-router';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useAppStore } from '../stores/useAppStore';
+import { useAuthStore } from '../stores/useAuthStore';
 import { fontSize, fontWeight } from '../theme/typography';
 
 export default function RootLayout() {
   const { initialize, isLoading, isOnboarded } = useAppStore();
+  const { restoreSession, isAuthenticated, isLoading: authIsLoading } = useAuthStore();
   const router = useRouter();
   const segments = useSegments();
 
   useEffect(() => {
-    initialize();
+    const boot = async () => {
+      await initialize();
+      await restoreSession();
+    };
+    boot();
   }, []);
 
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading || authIsLoading) return;
+
+    const inAuth = segments[0] === 'auth';
     const inOnboarding = segments[0] === 'onboarding';
-    if (!isOnboarded && !inOnboarding) {
+
+    if (!isAuthenticated && !inAuth) {
+      router.replace('/auth/login');
+      return;
+    }
+
+    if (isAuthenticated && !isOnboarded && !inOnboarding) {
       router.replace('/onboarding');
-    } else if (isOnboarded && inOnboarding) {
+      return;
+    }
+
+    if (isAuthenticated && isOnboarded && (inAuth || inOnboarding)) {
       router.replace('/(tabs)/learn');
     }
-  }, [isLoading, isOnboarded, segments]);
+  }, [isLoading, authIsLoading, isAuthenticated, isOnboarded, segments]);
 
-  if (isLoading) {
+  if (isLoading || authIsLoading) {
     return (
       <View style={styles.splash}>
         <Text style={styles.splashChar}>墨</Text>

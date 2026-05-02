@@ -321,3 +321,49 @@ export async function getAllSettings(): Promise<Record<string, string>> {
   }
   return result;
 }
+
+// ─── User / Auth Queries ─────────────────────────────────────
+
+export interface UserRow {
+  id: number;
+  email: string;
+  display_name: string;
+  password_hash: string;
+  password_salt: string;
+  created_at: string;
+}
+
+export async function getUserByEmail(email: string): Promise<UserRow | null> {
+  const db = getDatabase();
+  const row = await db.getFirstAsync<UserRow>(
+    'SELECT * FROM users WHERE email = ? COLLATE NOCASE',
+    email.toLowerCase().trim()
+  );
+  return row ?? null;
+}
+
+export async function getUserById(id: number): Promise<UserRow | null> {
+  const db = getDatabase();
+  const row = await db.getFirstAsync<UserRow>(
+    'SELECT * FROM users WHERE id = ?',
+    id
+  );
+  return row ?? null;
+}
+
+export async function createUser(
+  email: string,
+  displayName: string,
+  passwordHash: string,
+  passwordSalt: string
+): Promise<number> {
+  const db = getDatabase();
+  const result = await db.runAsync(
+    `INSERT INTO users (email, display_name, password_hash, password_salt) VALUES (?, ?, ?, ?)`,
+    email.toLowerCase().trim(),
+    displayName.trim(),
+    passwordHash,
+    passwordSalt
+  );
+  return result.lastInsertRowId;
+}

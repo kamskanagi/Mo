@@ -31,8 +31,14 @@
       "bundler": "metro"
     },
     "plugins": [
-      ["expo-router", { "root": "src/app" }],
-      "expo-sqlite"
+      [
+        "expo-router",
+        {
+          "root": "src/app"
+        }
+      ],
+      "expo-sqlite",
+      "expo-secure-store"
     ]
   }
 }

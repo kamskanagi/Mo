@@ -1,0 +1,128 @@
+<mxGraphModel adaptiveColors="auto" grid="0" pageWidth="1000" pageHeight="1050" math="0" shadow="0">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+    <mxCell id="2" value="Mo &#x2014; Learn Chinese Characters&#xa;Authentication Process Flow" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="175" y="5" width="450" height="45" as="geometry"/>
+    </mxCell>
+    <mxCell id="3" value="App Launch" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+      <mxGeometry x="325" y="60" width="150" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="4" value="User Authenticated?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="275" y="160" width="250" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="5" value="Login Screen" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;arcSize=15;" vertex="1" parent="1">
+      <mxGeometry x="60" y="290" width="170" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="6" value="Signup Screen" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;arcSize=15;" vertex="1" parent="1">
+      <mxGeometry x="550" y="290" width="170" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="7" value="Credentials Valid?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="25" y="395" width="200" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="8" value="Input Valid?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="555" y="395" width="200" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="9" value="Show Error" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="30" y="520" width="130" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="10" value="Create User Account" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="555" y="520" width="170" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="11" value="Show Error" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="760" y="520" width="130" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="12" value="Is Onboarded?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="275" y="615" width="250" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="13" value="Onboarding Screen" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;arcSize=15;" vertex="1" parent="1">
+      <mxGeometry x="70" y="750" width="170" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="14" value="Main App (5 Tabs)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+      <mxGeometry x="325" y="860" width="150" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="20" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="3" target="4" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="21" value="No" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="4" target="5" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="22" value="Yes (already logged in)" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="4" target="12" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="960" y="195"/>
+          <mxPoint x="960" y="650"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="23" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="5" target="7" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="24" value="Tap Sign Up" style="edgeStyle=orthogonalEdgeStyle;dashed=1;fontSize=11;" edge="1" source="5" target="6" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="145" y="270"/>
+          <mxPoint x="635" y="270"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="25" value="Invalid" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="7" target="9" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="26" value="Retry" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="9" target="5" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="10" y="540"/>
+          <mxPoint x="10" y="315"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="27" value="Valid" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="7" target="12" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="125" y="585"/>
+          <mxPoint x="400" y="585"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="28" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="6" target="8" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="29" value="Invalid" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="8" target="11" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="30" value="Retry" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="11" target="6" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="930" y="540"/>
+          <mxPoint x="930" y="315"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="31" value="Valid" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="8" target="10" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="32" value="Auto Login" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="10" target="12" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="640" y="585"/>
+          <mxPoint x="525" y="585"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="33" value="No" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="12" target="13" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="34" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="13" target="14" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="155" y="830"/>
+          <mxPoint x="400" y="830"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="35" value="Yes" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="12" target="14" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+  </root>
+</mxGraphModel>

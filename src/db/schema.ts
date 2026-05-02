@@ -7,7 +7,7 @@ import * as SQLite from 'expo-sqlite';
 
 let _db: SQLite.SQLiteDatabase | null = null;
 
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2;
 
 /**
  * Open (or create) the database and ensure all tables exist.
@@ -76,11 +76,22 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
       value TEXT NOT NULL
     );
 
+    -- User accounts
+    CREATE TABLE IF NOT EXISTS users (
+      id            INTEGER PRIMARY KEY AUTOINCREMENT,
+      email         TEXT    NOT NULL UNIQUE COLLATE NOCASE,
+      display_name  TEXT    NOT NULL DEFAULT '',
+      password_hash TEXT    NOT NULL,
+      password_salt TEXT    NOT NULL,
+      created_at    TEXT    NOT NULL DEFAULT (datetime('now'))
+    );
+
     -- Indexes for common queries
     CREATE INDEX IF NOT EXISTS idx_chars_week ON characters(week);
     CREATE INDEX IF NOT EXISTS idx_chars_day ON characters(day);
     CREATE INDEX IF NOT EXISTS idx_progress_status ON user_progress(status);
     CREATE INDEX IF NOT EXISTS idx_progress_next_review ON user_progress(next_review);
+    CREATE INDEX IF NOT EXISTS idx_users_email ON users(email COLLATE NOCASE);
   `);
 
   // Check and set schema version
@@ -120,10 +131,19 @@ async function runMigrations(
 ): Promise<void> {
   console.log(`Migrating database from v${oldVersion} to v${newVersion}`);
 
-  // Example future migration:
-  // if (oldVersion < 2) {
-  //   await db.execAsync('ALTER TABLE characters ADD COLUMN radical TEXT;');
-  // }
+  if (oldVersion < 2) {
+    await db.execAsync(`
+      CREATE TABLE IF NOT EXISTS users (
+        id            INTEGER PRIMARY KEY AUTOINCREMENT,
+        email         TEXT    NOT NULL UNIQUE COLLATE NOCASE,
+        display_name  TEXT    NOT NULL DEFAULT '',
+        password_hash TEXT    NOT NULL,
+        password_salt TEXT    NOT NULL,
+        created_at    TEXT    NOT NULL DEFAULT (datetime('now'))
+      );
+      CREATE INDEX IF NOT EXISTS idx_users_email ON users(email COLLATE NOCASE);
+    `);
+  }
 }
 
 /**
