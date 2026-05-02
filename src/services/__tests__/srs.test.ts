@@ -3,6 +3,7 @@
  */
 import {
   calculateNextReview,
+  calculateNextReviewRated,
   formatInterval,
   isDueToday,
 } from '../srs';
@@ -95,5 +96,60 @@ describe('isDueToday', () => {
 
   it('returns false when nextReview is in the future', () => {
     expect(isDueToday('2099-12-31')).toBe(false);
+  });
+});
+
+describe('calculateNextReviewRated', () => {
+  const base = { currentInterval: 7, currentFactor: 2.5, correctCount: 4 };
+
+  it('again resets interval to 1 and decreases factor by 0.2', () => {
+    const r = calculateNextReviewRated(base, 'again');
+    expect(r.srsInterval).toBe(1);
+    expect(r.srsFactor).toBe(2.3);
+    expect(r.status).toBe('learning');
+  });
+
+  it('hard multiplies interval by 1.2 and decreases factor by 0.15', () => {
+    const r = calculateNextReviewRated(base, 'hard');
+    expect(r.srsInterval).toBe(Math.round(7 * 1.2));
+    expect(r.srsFactor).toBeCloseTo(2.35, 2);
+    expect(r.status).toBe('reviewing');
+  });
+
+  it('good follows normal SM-2 progression', () => {
+    const r = calculateNextReviewRated(base, 'good');
+    expect(r.srsInterval).toBe(Math.round(7 * (2.5 + 0.05)));
+    expect(r.status).toBe('reviewing');
+  });
+
+  it('easy multiplies interval by factor * 1.3', () => {
+    const r = calculateNextReviewRated(base, 'easy');
+    expect(r.srsInterval).toBe(Math.round(7 * (2.5 + 0.15) * 1.3));
+    expect(r.status).toBe('reviewing');
+  });
+
+  it('again on first card (interval=0) sets interval to 1', () => {
+    const r = calculateNextReviewRated({ ...base, currentInterval: 0 }, 'again');
+    expect(r.srsInterval).toBe(1);
+  });
+
+  it('easy on first card (interval=0) skips to interval 3', () => {
+    const r = calculateNextReviewRated({ ...base, currentInterval: 0 }, 'easy');
+    expect(r.srsInterval).toBe(3);
+  });
+
+  it('factor never drops below 1.3', () => {
+    const r = calculateNextReviewRated({ ...base, currentFactor: 1.3 }, 'again');
+    expect(r.srsFactor).toBe(1.3);
+  });
+
+  it('interval is capped at 365', () => {
+    const r = calculateNextReviewRated({ ...base, currentInterval: 300 }, 'easy');
+    expect(r.srsInterval).toBeLessThanOrEqual(365);
+  });
+
+  it('nextReview is a valid YYYY-MM-DD date', () => {
+    const r = calculateNextReviewRated(base, 'good');
+    expect(r.nextReview).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
 });

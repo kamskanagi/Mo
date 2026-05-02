@@ -121,3 +121,56 @@ export function isDueToday(nextReview: string | null): boolean {
   const today = new Date().toISOString().slice(0, 10);
   return nextReview <= today;
 }
+
+export type SrsRating = 'again' | 'hard' | 'good' | 'easy';
+
+export function calculateNextReviewRated(
+  input: Omit<SrsInput, 'wasCorrect'>,
+  rating: SrsRating
+): SrsUpdate {
+  const { currentInterval, currentFactor } = input;
+  let newInterval: number;
+  let newFactor: number;
+
+  switch (rating) {
+    case 'again':
+      newInterval = 1;
+      newFactor = Math.max(1.3, currentFactor - 0.2);
+      break;
+    case 'hard':
+      newFactor = Math.max(1.3, currentFactor - 0.15);
+      newInterval = currentInterval === 0 ? 1 : Math.max(1, Math.round(currentInterval * 1.2));
+      break;
+    case 'good':
+      newFactor = Math.max(1.3, currentFactor + 0.05);
+      if (currentInterval === 0) newInterval = 1;
+      else if (currentInterval === 1) newInterval = 3;
+      else if (currentInterval === 3) newInterval = 7;
+      else newInterval = Math.round(currentInterval * newFactor);
+      break;
+    case 'easy':
+      newFactor = Math.min(4.0, currentFactor + 0.15);
+      newInterval = currentInterval === 0 ? 3 : Math.round(currentInterval * newFactor * 1.3);
+      break;
+    default:
+      throw new Error(`Unknown SrsRating: ${rating}`);
+  }
+
+  newInterval = Math.min(newInterval, 365);
+
+  const status: 'learning' | 'reviewing' | 'mastered' =
+    rating === 'again' ? 'learning'
+    : newInterval < 7 ? 'learning'
+    : newInterval >= 90 ? 'mastered'
+    : 'reviewing';
+
+  const nextDate = new Date();
+  nextDate.setDate(nextDate.getDate() + newInterval);
+
+  return {
+    srsInterval: newInterval,
+    srsFactor: Math.round(newFactor * 100) / 100,
+    nextReview: nextDate.toISOString().slice(0, 10),
+    status,
+  };
+}
