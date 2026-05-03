@@ -1,11 +1,13 @@
 // src/components/write/HanziPracticeCard.tsx
 import { useEffect, useCallback, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
 import { useHanziWriter, HanziWriter } from '@jamsch/react-native-hanzi-writer';
 import { useTheme } from '../../theme';
 import { spacing, radius } from '../../theme/spacing';
 import { fontSize, fontWeight } from '../../theme/typography';
 import type { Character } from '../../types/character';
+
+const CANVAS_PADDING = 48; // 24px margin each side
 
 interface HanziPracticeCardProps {
   character: Character;
@@ -15,6 +17,8 @@ interface HanziPracticeCardProps {
 
 export function HanziPracticeCard({ character, onComplete, onSkip }: HanziPracticeCardProps) {
   const { colors } = useTheme();
+  const { width: screenWidth } = useWindowDimensions();
+  const canvasSize = Math.min(screenWidth - CANVAS_PADDING * 2, 280);
 
   const writer = useHanziWriter({ character: character.character });
 
@@ -43,9 +47,17 @@ export function HanziPracticeCard({ character, onComplete, onSkip }: HanziPracti
         </Text>
       </Text>
 
-      <View style={[styles.canvas, { borderColor: colors.border, backgroundColor: colors.surface }]}>
-        <HanziWriter writer={writer} style={styles.writer}>
-          <HanziWriter.Svg>
+      <View style={[
+        styles.canvas,
+        {
+          width: canvasSize,
+          height: canvasSize,
+          borderColor: colors.border,
+          backgroundColor: colors.surface,
+        },
+      ]}>
+        <HanziWriter writer={writer} style={{ width: canvasSize, height: canvasSize }}>
+          <HanziWriter.Svg width={canvasSize} height={canvasSize}>
             <HanziWriter.Outline color={colors.characterOutline} />
             <HanziWriter.Character color={colors.characterStroke} />
             <HanziWriter.QuizStrokes color={colors.characterStroke} />
@@ -79,7 +91,6 @@ const styles = StyleSheet.create({
   keyword: { fontSize: fontSize.lg, fontWeight: fontWeight.bold },
   pinyin: { fontSize: fontSize.body, fontWeight: fontWeight.normal },
   canvas: { borderRadius: radius.xl, borderWidth: 1, overflow: 'hidden' },
-  writer: { width: 220, height: 220 },
   controls: { flexDirection: 'row', gap: spacing.md },
   ctrlBtn: {
     paddingHorizontal: spacing.lg,
