@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Slot, useRouter, useSegments } from 'expo-router';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useAppStore } from '../stores/useAppStore';
 import { useAuthStore } from '../stores/useAuthStore';
 import { fontSize, fontWeight } from '../theme/typography';
@@ -43,17 +44,21 @@ export default function RootLayout() {
 
   if (isLoading || authIsLoading) {
     return (
-      <View style={styles.splash}>
-        <Text style={styles.splashChar}>墨</Text>
-        <Text style={styles.splashName}>Mò</Text>
-      </View>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <View style={styles.splash}>
+          <Text style={styles.splashChar}>墨</Text>
+          <Text style={styles.splashName}>Mò</Text>
+        </View>
+      </GestureHandlerRootView>
     );
   }
 
   return (
-    <SafeAreaProvider>
-      <Slot />
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <Slot />
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
 
