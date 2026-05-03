@@ -1,8 +1,15 @@
-import React from 'react';
 import { Pressable, Text, ActivityIndicator, StyleSheet, type ViewStyle } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
+import * as Haptics from 'expo-haptics';
 import { useTheme } from '../../theme';
 import { spacing, radius } from '../../theme/spacing';
 import { fontSize, fontWeight } from '../../theme/typography';
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 interface Props {
   label: string;
@@ -23,35 +30,64 @@ export function Button({
   disabled = false,
   style,
 }: Props) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
+  const scale = useSharedValue(1);
 
   const isPrimary = variant === 'primary';
-  const bgColor = isPrimary ? colors.teal : 'transparent';
-  const fgColor = isPrimary ? '#FFFFFF' : colors.teal;
-  const borderColor = isPrimary ? 'transparent' : colors.teal;
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const handlePressIn = () => {
+    scale.value = withSpring(0.97, { damping: 20, stiffness: 400 });
+  };
+
+  const handlePressOut = () => {
+    scale.value = withSpring(1.0, { damping: 15, stiffness: 250 });
+  };
+
+  const handlePress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onPress();
+  };
+
+  const primaryShadow = isPrimary && !disabled ? {
+    shadowColor: colors.teal,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: isDark ? 0.35 : 0.18,
+    shadowRadius: 14,
+    elevation: 4,
+  } : {};
 
   return (
-    <Pressable
-      onPress={onPress}
+    <AnimatedPressable
+      onPress={handlePress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
       disabled={disabled || loading}
-      style={({ pressed }) => [
+      style={[
+        animatedStyle,
         styles.button,
         {
-          backgroundColor: bgColor,
-          borderColor,
-          borderRadius: radius.md,
+          backgroundColor: isPrimary ? colors.teal : 'transparent',
+          borderColor: isPrimary ? 'transparent' : colors.teal,
+          borderRadius: radius.lg,
           alignSelf: fullWidth ? 'stretch' : 'flex-start',
-          opacity: pressed || disabled ? 0.7 : 1,
+          opacity: disabled ? 0.4 : 1,
+          ...primaryShadow,
         },
         style,
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={fgColor} size="small" />
+        <ActivityIndicator color={isPrimary ? '#FFFFFF' : colors.teal} size="small" />
       ) : (
-        <Text style={[styles.label, { color: fgColor }]}>{label}</Text>
+        <Text style={[styles.label, { color: isPrimary ? '#FFFFFF' : colors.teal }]}>
+          {label}
+        </Text>
       )}
-    </Pressable>
+    </AnimatedPressable>
   );
 }
 
@@ -66,5 +102,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: fontSize.body,
     fontWeight: fontWeight.semibold,
+    letterSpacing: 0.2,
   },
 });

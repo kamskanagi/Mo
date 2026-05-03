@@ -12,7 +12,7 @@ interface Props {
   label?: string;
 }
 
-export function ProgressBar({ progress, color, height = 8, label }: Props) {
+export function ProgressBar({ progress, color, height = 5, label }: Props) {
   const { colors } = useTheme();
   const clampedProgress = Math.max(0, Math.min(1, progress));
   const width = useSharedValue(0);
@@ -32,12 +32,12 @@ export function ProgressBar({ progress, color, height = 8, label }: Props) {
       {label ? (
         <Text style={[styles.label, { color: colors.textSecondary }]}>{label}</Text>
       ) : null}
-      <View style={[styles.track, { height, backgroundColor: colors.border, borderRadius: radius.sm }]}>
+      <View style={[styles.track, { height, backgroundColor: colors.surfaceAlt, borderRadius: height }]}>
         <Animated.View
           style={[
             styles.fill,
             animatedStyle,
-            { height, backgroundColor: barColor, borderRadius: radius.sm },
+            { height, backgroundColor: barColor, borderRadius: height },
           ]}
         />
       </View>

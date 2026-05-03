@@ -1,7 +1,14 @@
-import React from 'react';
-import { Pressable, View, StyleSheet, type ViewStyle } from 'react-native';
+import { StyleSheet, View, type ViewStyle } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
+import { Pressable } from 'react-native';
 import { useTheme } from '../../theme';
-import { spacing, radius, shadows } from '../../theme/spacing';
+import { spacing, radius } from '../../theme/spacing';
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 interface Props {
   children: React.ReactNode;
@@ -11,38 +18,32 @@ interface Props {
 
 export function Card({ children, onPress, style }: Props) {
   const { colors } = useTheme();
+  const scale = useSharedValue(1);
 
-  const cardStyle = [
-    styles.card,
-    {
-      backgroundColor: colors.surface,
-      borderColor: colors.border,
-      borderRadius: radius.lg,
-      ...shadows.sm,
-    },
-    style,
-  ];
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const cardStyle: ViewStyle = {
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
+    borderRadius: radius.xl,
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: spacing.lg,
+  };
 
   if (onPress) {
     return (
-      <Pressable
+      <AnimatedPressable
         onPress={onPress}
-        style={({ pressed }) => [cardStyle, pressed && styles.pressed]}
+        onPressIn={() => { scale.value = withSpring(0.985, { damping: 20, stiffness: 400 }); }}
+        onPressOut={() => { scale.value = withSpring(1, { damping: 15, stiffness: 250 }); }}
+        style={[animatedStyle, cardStyle, style]}
       >
         {children}
-      </Pressable>
+      </AnimatedPressable>
     );
   }
 
-  return <View style={cardStyle}>{children}</View>;
+  return <View style={[cardStyle, style]}>{children}</View>;
 }
-
-const styles = StyleSheet.create({
-  card: {
-    padding: spacing.lg,
-    borderWidth: 1,
-  },
-  pressed: {
-    opacity: 0.85,
-  },
-});

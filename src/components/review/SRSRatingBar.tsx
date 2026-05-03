@@ -36,9 +36,9 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: spacing.sm },
   btn: {
     flex: 1,
-    paddingVertical: spacing.md,
-    borderRadius: radius.md,
+    paddingVertical: spacing.base,
+    borderRadius: radius.lg,
     alignItems: 'center',
   },
-  label: { fontSize: fontSize.sm, fontWeight: fontWeight.bold },
+  label: { fontSize: fontSize.sm, fontWeight: fontWeight.bold, letterSpacing: 0.3 },
 });
