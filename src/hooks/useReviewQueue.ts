@@ -11,6 +11,7 @@ export interface ReviewSession {
   currentCard: Character | null;
   reviewed: number;
   againCount: number;
+  total: number;
   advance: () => void;
   incrementAgain: () => void;
 }
@@ -55,6 +56,7 @@ export function useReviewQueue(limit = 50): ReviewSession {
     currentCard: cards[index] ?? null,
     reviewed,
     againCount,
+    total: cards.length,
     advance,
     incrementAgain,
   };

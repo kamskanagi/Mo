@@ -1,5 +1,5 @@
 // src/components/write/HanziPracticeCard.tsx
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useHanziWriter, HanziWriter } from '@jamsch/react-native-hanzi-writer';
 import { useTheme } from '../../theme';
@@ -18,14 +18,17 @@ export function HanziPracticeCard({ character, onComplete, onSkip }: HanziPracti
 
   const writer = useHanziWriter({ character: character.character });
 
+  const onCompleteRef = useRef(onComplete);
+  useEffect(() => { onCompleteRef.current = onComplete; });
+
   useEffect(() => {
     writer.quiz.start({
       showHintAfterMisses: 3,
       onComplete: ({ totalMistakes }) => {
-        onComplete(totalMistakes);
+        onCompleteRef.current(totalMistakes);
       },
     });
-  }, [writer, onComplete]);
+  }, []);
 
   const handleShowMe = useCallback(() => {
     writer.animator.animateCharacter({ strokeDuration: 500 });

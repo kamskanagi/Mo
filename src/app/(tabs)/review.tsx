@@ -18,7 +18,7 @@ import type { Character } from '../../types/character';
 export default function ReviewScreen() {
   const { colors } = useTheme();
   const router = useRouter();
-  const { isLoading, isDone, hasStudied, nextReviewDate, currentCard, reviewed, againCount, advance, incrementAgain } =
+  const { isLoading, isDone, hasStudied, nextReviewDate, currentCard, reviewed, againCount, total, advance, incrementAgain } =
     useReviewQueue();
   const { recordReviewRated } = useProgressStore();
   const [isFlipped, setIsFlipped] = useState(false);
@@ -91,7 +91,7 @@ export default function ReviewScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
         <Text style={[styles.counter, { color: colors.textSecondary }]}>
-          {reviewed + 1} of {reviewed + 1 + (currentCard ? 1 : 0)}
+          {reviewed + 1} of {total}
         </Text>
       </View>
 

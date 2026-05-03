@@ -48,9 +48,13 @@ export default function WriteScreen() {
   );
 
   const handleSkip = useCallback(() => {
-    const char = chars[index];
-    handleComplete(char?.strokeCount ?? 10);
-  }, [chars, index, handleComplete]);
+    setTotalMistakes((t) => t + 1);
+    if (index + 1 >= chars.length) {
+      setIsDone(true);
+    } else {
+      setIndex((i) => i + 1);
+    }
+  }, [chars, index]);
 
   const handleRestart = useCallback(() => {
     setIndex(0);
