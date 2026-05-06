@@ -330,6 +330,8 @@ export interface UserRow {
   display_name: string;
   password_hash: string;
   password_salt: string;
+  social_provider: string | null;
+  social_id: string | null;
   created_at: string;
 }
 
@@ -364,6 +366,37 @@ export async function createUser(
     displayName.trim(),
     passwordHash,
     passwordSalt
+  );
+  return result.lastInsertRowId;
+}
+
+export async function getUserBySocialId(
+  provider: string,
+  socialId: string
+): Promise<UserRow | null> {
+  const db = getDatabase();
+  const row = await db.getFirstAsync<UserRow>(
+    'SELECT * FROM users WHERE social_provider = ? AND social_id = ?',
+    provider,
+    socialId
+  );
+  return row ?? null;
+}
+
+export async function createSocialUser(
+  email: string,
+  displayName: string,
+  provider: string,
+  socialId: string
+): Promise<number> {
+  const db = getDatabase();
+  const result = await db.runAsync(
+    `INSERT INTO users (email, display_name, password_hash, password_salt, social_provider, social_id)
+     VALUES (?, ?, 'SOCIAL', 'SOCIAL', ?, ?)`,
+    email.toLowerCase().trim(),
+    displayName.trim(),
+    provider,
+    socialId
   );
   return result.lastInsertRowId;
 }

@@ -7,7 +7,7 @@ import * as SQLite from 'expo-sqlite';
 
 let _db: SQLite.SQLiteDatabase | null = null;
 
-const SCHEMA_VERSION = 2;
+const SCHEMA_VERSION = 3;
 
 /**
  * Open (or create) the database and ensure all tables exist.
@@ -78,12 +78,14 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
 
     -- User accounts
     CREATE TABLE IF NOT EXISTS users (
-      id            INTEGER PRIMARY KEY AUTOINCREMENT,
-      email         TEXT    NOT NULL UNIQUE COLLATE NOCASE,
-      display_name  TEXT    NOT NULL DEFAULT '',
-      password_hash TEXT    NOT NULL,
-      password_salt TEXT    NOT NULL,
-      created_at    TEXT    NOT NULL DEFAULT (datetime('now'))
+      id              INTEGER PRIMARY KEY AUTOINCREMENT,
+      email           TEXT    NOT NULL UNIQUE COLLATE NOCASE,
+      display_name    TEXT    NOT NULL DEFAULT '',
+      password_hash   TEXT    NOT NULL,
+      password_salt   TEXT    NOT NULL,
+      social_provider TEXT,
+      social_id       TEXT,
+      created_at      TEXT    NOT NULL DEFAULT (datetime('now'))
     );
 
     -- Indexes for common queries
@@ -92,6 +94,9 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
     CREATE INDEX IF NOT EXISTS idx_progress_status ON user_progress(status);
     CREATE INDEX IF NOT EXISTS idx_progress_next_review ON user_progress(next_review);
     CREATE INDEX IF NOT EXISTS idx_users_email ON users(email COLLATE NOCASE);
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_users_social
+      ON users(social_provider, social_id)
+      WHERE social_provider IS NOT NULL;
   `);
 
   // Check and set schema version
@@ -142,6 +147,16 @@ async function runMigrations(
         created_at    TEXT    NOT NULL DEFAULT (datetime('now'))
       );
       CREATE INDEX IF NOT EXISTS idx_users_email ON users(email COLLATE NOCASE);
+    `);
+  }
+
+  if (oldVersion < 3) {
+    await db.execAsync(`
+      ALTER TABLE users ADD COLUMN social_provider TEXT;
+      ALTER TABLE users ADD COLUMN social_id TEXT;
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_users_social
+        ON users(social_provider, social_id)
+        WHERE social_provider IS NOT NULL;
     `);
   }
 }

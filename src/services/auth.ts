@@ -5,8 +5,8 @@ import * as SecureStore from 'expo-secure-store';
 const SESSION_TOKEN_KEY = 'mo_session_token';
 const SESSION_USER_ID_KEY = 'mo_session_user_id';
 
-// Web fallback — expo-secure-store is native-only
-const storage = {
+// Web fallback — expo-secure-store is native-only; exported for Apple name caching
+export const storage = {
   async set(key: string, value: string) {
     if (Platform.OS === 'web') {
       localStorage.setItem(key, value);

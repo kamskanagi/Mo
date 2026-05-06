@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { getUserByEmail, getUserById, createUser } from '../db/queries';
+import { getUserByEmail, getUserById, createUser, getUserBySocialId, createSocialUser } from '../db/queries';
 import {
   generateSalt,
   hashPassword,
@@ -21,6 +21,12 @@ interface AuthActions {
   restoreSession: () => Promise<void>;
   login: (email: string, password: string) => Promise<boolean>;
   signup: (displayName: string, email: string, password: string) => Promise<boolean>;
+  socialLogin: (
+    provider: 'google' | 'apple',
+    socialId: string,
+    email: string,
+    displayName: string
+  ) => Promise<boolean>;
   logout: () => Promise<void>;
   clearError: () => void;
 }
@@ -118,6 +124,58 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
       return true;
     } catch (e: any) {
       set({ isLoading: false, error: e?.message ?? 'Signup failed.' });
+      return false;
+    }
+  },
+
+  socialLogin: async (provider, socialId, email, displayName) => {
+    set({ isLoading: true, error: null });
+    try {
+      // Check if social account already exists
+      const existing = await getUserBySocialId(provider, socialId);
+      if (existing) {
+        await createSession(existing.id);
+        set({
+          user: {
+            id: existing.id,
+            email: existing.email,
+            displayName: existing.display_name,
+            createdAt: existing.created_at,
+          },
+          isAuthenticated: true,
+          isLoading: false,
+          error: null,
+        });
+        return true;
+      }
+
+      // Check email collision with an existing password account
+      const emailRow = await getUserByEmail(email);
+      if (emailRow && emailRow.social_provider === null) {
+        set({
+          isLoading: false,
+          error: 'This email is already registered. Please sign in with email instead.',
+        });
+        return false;
+      }
+
+      // Create new social account
+      const userId = await createSocialUser(email, displayName, provider, socialId);
+      await createSession(userId);
+      set({
+        user: {
+          id: userId,
+          email: email.toLowerCase().trim(),
+          displayName: displayName.trim(),
+          createdAt: new Date().toISOString(),
+        },
+        isAuthenticated: true,
+        isLoading: false,
+        error: null,
+      });
+      return true;
+    } catch (e: any) {
+      set({ isLoading: false, error: e?.message ?? 'Social sign-in failed.' });
       return false;
     }
   },

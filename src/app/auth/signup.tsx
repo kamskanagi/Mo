@@ -14,6 +14,7 @@ import { useRouter } from 'expo-router';
 import { useTheme } from '../../theme';
 import { useAuthStore } from '../../stores/useAuthStore';
 import { Button } from '../../components/ui/Button';
+import { SocialSignInButtons } from '../../components/auth/SocialSignInButtons';
 import { spacing, radius } from '../../theme/spacing';
 import { fontSize, fontWeight } from '../../theme/typography';
 
@@ -177,6 +178,8 @@ export default function SignupScreen() {
               loading={isLoading}
               style={styles.button}
             />
+
+            <SocialSignInButtons onSuccess={() => router.replace('/(tabs)/learn')} />
           </View>
 
           <Pressable onPress={() => router.push('/auth/login')} style={styles.switchLink}>
